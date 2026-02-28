@@ -1,0 +1,19 @@
+@use "sass:map";
+@use "variables";
+
+@mixin font($weight, $size: 16, $line-height: 1.5, $letter-spacing: 2) {
+  font-weight: $weight;
+  font-size: #{$size}px;
+  line-height: #{$line-height}px;
+  letter-spacing: #{$letter-spacing}px;
+}
+
+@mixin media-query($breakpoint) {
+  @if map.has-key(variables.$breakpoints, $breakpoint) {
+    @media (min-width: map.get(variables.$breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @error "Breakpoint `#{$breakpoint}` not found in $breakpoints map.";
+  }
+}
