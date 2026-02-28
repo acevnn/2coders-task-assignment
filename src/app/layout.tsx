@@ -10,8 +10,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Streamform",
+  title: {
+    default: "Football Hub",
+    template: "%s | Football Hub",
+  },
   description: "Sports and entertainment streaming platform",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "Football Hub",
+  },
 };
 
 export default function RootLayout({
