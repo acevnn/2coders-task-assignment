@@ -1,49 +1,62 @@
-export async function getSportData() {
-  const responses = await Promise.all([
-    fetch(
-      "https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=4328",
-      { next: { revalidate: 300 } },
-    ),
+import { Match, Team } from "@/lib/types";
 
-    fetch(
-      "https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=4331",
-      { next: { revalidate: 300 } },
+const API = "https://www.thesportsdb.com/api/v1/json/123";
+const leagueIds = ["4328", "4331", "4332", "4335"];
+
+interface LeagueResponse {
+  events: Match[] | null;
+}
+
+interface TeamResponse {
+  teams: Team[] | null;
+}
+
+export async function getMatches(): Promise<Match[]> {
+  const responses = await Promise.all(
+    leagueIds.map((id) =>
+      fetch(`${API}/eventsnextleague.php?id=${id}`, {
+        next: { revalidate: 300 },
+      }),
     ),
-    fetch(
-      "https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=4332",
-      { next: { revalidate: 300 } },
-    ),
-    fetch(
-      "https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=4335",
-      { next: { revalidate: 300 } },
-    ),
-  ]);
+  );
 
   responses.forEach((res) => {
-    if (!res.ok) throw new Error("error");
+    if (!res.ok) throw new Error("Failed to fetch matches");
   });
 
-  const data = await Promise.all(responses.map((res) => res.json()));
-
-  return data.flatMap((league) => league.events ?? []);
-}
-
-export async function getSportLeague() {
-  const res = await fetch(
-    "https://www.thesportsdb.com/api/v1/json/123/all_leagues.php",
+  const data: LeagueResponse[] = await Promise.all(
+    responses.map((res) => res.json()),
   );
 
-  if (!res.ok) throw new Error("Error");
+  const matches = data.flatMap((league) => league.events ?? []);
 
-  return res.json();
+  return matches.sort(
+    (a: Match, b: Match) =>
+      new Date(a.dateEvent).getTime() - new Date(b.dateEvent).getTime(),
+  );
 }
 
-export async function getUpcomingMatches() {
+export async function getTeamByName(name: string): Promise<Team | null> {
   const res = await fetch(
-    "https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=4328",
+    `${API}/searchteams.php?t=${encodeURIComponent(name)}`,
+    { next: { revalidate: 3600 } },
   );
 
-  if (!res.ok) throw new Error("error");
+  if (!res.ok) throw new Error("Failed to fetch team");
 
-  return res.json();
+  const data: TeamResponse = await res.json();
+
+  return data.teams?.[0] ?? null;
+}
+
+export async function getLiveMatches(): Promise<Match[]> {
+  const res = await fetch(`${API}/livescore.php?s=Soccer`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch live matches");
+
+  const data: LeagueResponse = await res.json();
+
+  return data.events ?? [];
 }

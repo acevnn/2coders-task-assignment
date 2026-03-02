@@ -1,19 +1,23 @@
-import styles from "./page.module.css";
-import { getSportData } from "@/lib/fetchData";
+import { getMatches } from "@/lib/fetchData";
+import FeaturedMatch from "@/components/FeaturedMatch/FeaturedMatch";
+import UpcomingMatches from "@/components/UpcomingMatches/UpcomingMatches";
+
+export const revalidate = 300;
 
 export default async function Home() {
-  const events = await getSportData();
-  const featuredMatch = events[0].strEvent;
+  const matches = await getMatches();
+
+  if (!matches.length) {
+    return <div>No matches available</div>;
+  }
+
+  const featured = matches[0];
+  const upcoming = matches.slice(1, 8);
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        {/*<pre>{JSON.stringify(events, null, 2)}</pre>*/}
-        <h1>{featuredMatch}</h1>
-        {events.map((team: any) => (
-          <h3 key={team.idEvent}>{team.strEvent}</h3>
-        ))}
-      </main>
-    </div>
+    <main>
+      <FeaturedMatch match={featured} />
+      <UpcomingMatches upcoming={upcoming} />
+    </main>
   );
 }
