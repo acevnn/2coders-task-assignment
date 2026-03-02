@@ -10,6 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("http://localhost:3000"),
   title: {
     default: "Football Hub",
     template: "%s | Football Hub",
@@ -19,6 +20,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "Football Hub",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 

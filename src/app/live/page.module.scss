@@ -1,0 +1,22 @@
+@use '@/styles/variables';
+@use '@/styles/mixins';
+
+
+.live {
+  padding: var(--spacing-7);
+
+  &__refresh {
+    @include mixins.font(400, 14px, 16px);
+
+    opacity: 0.7;
+  }
+
+  &__last-updated {
+    @include mixins.font(400, 14px, 16px);
+    opacity: 0.7;
+  }
+
+  &__matches-wrapper {
+    margin-bottom: var(--spacing-4);
+  }
+}

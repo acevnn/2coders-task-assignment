@@ -1,5 +1,5 @@
 @use "sass:map";
-@use "variables";
+@use "@/styles/variables";
 
 @mixin font($weight, $size: 16, $line-height: 1.5, $letter-spacing: 2) {
   font-weight: $weight;
